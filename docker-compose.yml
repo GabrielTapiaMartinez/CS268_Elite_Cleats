@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: elite-cleats-web
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=elite_cleats_db
+      - DB_USER=root
+      - DB_PASS=root
+
+  db:
+    image: mysql:5.7
+    container_name: elite-cleats-db
+    environment:
+      MYSQL_DATABASE: elite_cleats_db
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+      # Automatically initialize the database
+      - ./Backend/elite_cleats_db.sql:/docker-entrypoint-initdb.d/1_schema.sql
+      - ./Backend/populate_db.sql:/docker-entrypoint-initdb.d/2_populate.sql
+
+volumes:
+  db_data:
